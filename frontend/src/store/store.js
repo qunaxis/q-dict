@@ -3,6 +3,14 @@ import axios from 'axios'
 import shortid from 'shortid'
 import saveToLS from './saveToLS'
 
+// seacrh in array
+function search(prop, value, array){
+    for (var i=0; i < array.length; i++) {
+        if (array[i][prop] == value) {
+            return array[i]
+        }
+    }
+}
 
 class Word {
     id = shortid.generate()
@@ -23,7 +31,8 @@ class Store {
     @observable status = 'wait' // 'wait' | 'done' | 'error'
     @observable errorMessage = ''
     @observable rSelected = 1;
-    
+    @observable wSelected = null;
+
     constructor() {
         this.word = new Word()
         // let locStor = JSON.parse(localStorage['q-dict'])
@@ -60,6 +69,44 @@ class Store {
             this.word.ru.splice(this.word.ru.indexOf(tr), 1)
             this.word = new Word(this.word)
         }
+
+
+    @computed get filteredTranslations() {
+        let tSelected = search('id', this.wSelected, this.dictionary)
+        // tSelected.length > 0 ? tSelected.ru.peek() : ''
+        let trCurrent = this.word.ru.peek()
+
+        console.groupCollapsed('filteredTranslations')
+        console.group('START')
+            console.log(tSelected)
+            console.log(trCurrent)
+        console.groupEnd()
+
+        if (tSelected != undefined) {
+            tSelected = tSelected.ru.peek()
+            tSelected.forEach(tr => {
+                const key = trCurrent.indexOf(tr)
+                if (key != undefined && key != -1) {
+                    console.log(key + 'true' + trCurrent[key])
+                    trCurrent.splice(key, 1)
+                }
+            })
+        }
+        
+        console.group('STOP')
+            console.log(tSelected)
+            console.log(trCurrent)
+        console.groupEnd()
+        console.groupEnd()
+
+        return trCurrent
+    }
+
+    @action selectWord(wordId) {
+        this.wSelected = wordId
+        this.word.en = search('id', this.wSelected, this.dictionary).en
+        this.getTranslate()
+    }
 
     @computed get filteredWords() {
         function checkRu(tr, matchesFilter) {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { observer } from 'mobx-react';
 
-import { Container, Row, Col, Table, Input, Button, ButtonGroup, ListGroup, ListGroupItem } from 'reactstrap'
+import { Container, Row, Col, Table, Input, Button, ButtonGroup, ListGroup, ListGroupItem, Alert } from 'reactstrap'
 
 
 
@@ -22,7 +22,7 @@ export default class App extends Component {
   }
 
   handleChooseWord = (wordId) => {
-    this.props.store.wSelected = wordId
+    this.props.store.selectWord(wordId)
   }
 
   // onKeyPress
@@ -40,8 +40,8 @@ export default class App extends Component {
       <tr key={ word.id }>
         <td><span className={ store.wSelected == word.id ? 'selected-word' : '' } onClick={ () => this.handleChooseWord(word.id) }>{ word.en }</span></td>
         <td>
-          { word.ru.map((tr, id) => 
-            <p key={ id }>{ tr }</p>) }
+          { word.ru != undefined ? word.ru.sort().map((tr, id) => 
+            <p key={ id }>{ tr }</p>) : '' }
         </td>
         <td>{ word.transcription }</td>
       </tr>
@@ -53,13 +53,19 @@ export default class App extends Component {
           <Col xs={12} md={6}>
             <h1>Q-Dictionary</h1>
             <ButtonGroup>
-            <Button outline color='primary' onClick={() => this.onRadioBtnClick(0)} active={store.rSelected === 0}>Google</Button>
-            <Button outline color='primary' onClick={() => this.onRadioBtnClick(1)} active={store.rSelected === 1}>Yandex</Button>
-          </ButtonGroup>
+              <Button outline color='primary' onClick={() => this.onRadioBtnClick(0)} active={store.rSelected === 0}>Google</Button>
+              <Button outline color='primary' onClick={() => this.onRadioBtnClick(1)} active={store.rSelected === 1}>Yandex</Button>
+            </ButtonGroup>
+          <span className='status'>{ store.status }</span>
           </Col>
           <Col xs={12} md={6}>
-            <p>{ store.status }</p>
-            <p>{ store.errorMessage.toString() }</p>         
+          {
+            store.errorMessage ?
+              <Alert color="warning">
+                { store.errorMessage.toString() }
+              </Alert>
+            : ''
+          }
           </Col>
         </Row>
         <Row>
@@ -73,13 +79,14 @@ export default class App extends Component {
           </Col>
           <Col xs={12} md={4}>
             <p className='transcription'>{ store.word.transcription }</p>
+            {/* <p className='transcription'>{ store.filteredTranslations }</p> */}
           </Col>
           {
-            store.word.ru.lenght != 0  
+            store.filteredTranslations.lenght != 0  
             ? <Col xs={12} md={4}> 
                 <ListGroup>
-                  { store.word.ru.map(word => 
-                    <ListGroupItem className='translated-word' key={ word.id }>
+                  { store.filteredTranslations.map((word, key) => 
+                    <ListGroupItem className='translated-word' key={ key }>
                       <p>{ word }</p>
                       <Button outline onClick={ () => this.hanldeAddTranslate(word) }>+</Button>
                     </ListGroupItem> 

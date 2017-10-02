@@ -10,8 +10,9 @@ function storedObservable (key, defaultValue, debounce) {
   const obsVal = observable(defaultClone)
   autorunAsync(() => {
     localStorage.setItem(key, JSON.stringify(obsVal))
+    console.log(obsVal)
   }, debounce)
-  console.log(obsVal)
+  console.log('From LocalStorage: ' + obsVal)
   return obsVal
 }
 
