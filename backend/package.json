@@ -44,8 +44,7 @@
     "morgan": "^1.7.0",
     "pug": "^2.0.0-beta11",
     "querystring": "^0.2.0",
-    "rimraf": "^2.6.1",
-    "socket.io": "^2.0.3"
+    "rimraf": "^2.6.1"
   },
   "devDependencies": {
     "babel-jest": "^20.0.0",

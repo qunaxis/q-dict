@@ -61,7 +61,7 @@ export default class App extends Component {
           <Col xs={12} md={6}>
           {
             store.errorMessage ?
-              <Alert color="warning">
+              <Alert color='warning'>
                 { store.errorMessage.toString() }
               </Alert>
             : ''
